@@ -5,107 +5,127 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kho Trắc Nghiệm KTCT - Doãn Nguyễn Gia Khang</title>
     <style>
+        /* Định nghĩa biến màu sắc cho 2 chế độ */
         :root {
             --primary: #0056b3;
             --bg-color: #f4f7f6;
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
             --correct-color: #28a745;
             --wrong-color: #dc3545;
+            --box-bg: #ffffff;
         }
+
+        body.dark-theme {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --border-color: #333333;
+            --box-bg: #252525;
+            --primary: #4791ff;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
-            color: #333;
+            transition: background 0.3s, color 0.3s;
         }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: #fff;
+            background: var(--container-bg);
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
         }
-        h1 {
-            text-align: center;
-            color: var(--primary);
+
+        /* Nút chỉnh sáng tối */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--box-bg);
+            color: var(--text-color);
+            font-size: 14px;
         }
-        .menu-section {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
-        }
+
+        h1 { text-align: center; color: var(--primary); margin-top: 10px; }
+        .menu-section { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
+        
         .btn {
             padding: 12px 20px;
             font-size: 16px;
             cursor: pointer;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             background-color: var(--primary);
             color: white;
             transition: 0.3s;
         }
-        .btn:hover { background-color: #004494; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-outline {
             background-color: transparent;
             color: var(--primary);
             border: 2px solid var(--primary);
         }
-        .btn-outline:hover {
-            background-color: var(--primary);
-            color: white;
+        .btn-outline:hover { background-color: var(--primary); color: white; }
+        .btn-secondary { background-color: #6c757d; }
+        
+        .question-box { 
+            margin-bottom: 25px; 
+            padding: 18px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            background: var(--box-bg);
         }
-        .question-box {
-            margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .question-title { font-weight: bold; margin-bottom: 15px; }
-        .option {
-            display: block;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        /* Style cho kết quả */
-        .correct-border { border: 2px solid var(--correct-color) !important; background-color: #e9f7ef; }
-        .wrong-border { border: 2px solid var(--wrong-color) !important; background-color: #fceceb; }
+        .question-title { font-weight: bold; margin-bottom: 15px; line-height: 1.5; }
+        .option { display: block; margin-bottom: 12px; cursor: pointer; }
+        
+        .correct-border { border: 2px solid var(--correct-color) !important; background-color: rgba(40, 167, 69, 0.1) !important; }
+        .wrong-border { border: 2px solid var(--wrong-color) !important; background-color: rgba(220, 53, 69, 0.1) !important; }
+        
         .answer-reveal {
             margin-top: 10px;
             padding: 10px;
-            background: #e9f7ef;
+            background: rgba(40, 167, 69, 0.15);
             color: var(--correct-color);
             font-weight: bold;
             border-left: 4px solid var(--correct-color);
             display: none;
         }
-        .controls { display: flex; gap: 10px; margin-top: 20px; justify-content: center;}
+
+        .controls { display: flex; gap: 10px; margin-top: 20px; justify-content: center; flex-wrap: wrap;}
         #score-display { text-align: center; font-size: 24px; color: var(--primary); margin-bottom: 20px;}
     </style>
 </head>
-<body>
-
-<div class="container" id="app">
+<body class="light-theme"> <div class="container" id="app">
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Chế độ tối</button>
+    
     <div id="home-screen">
         <h1>Hệ Thống Ôn Tập KTCT</h1>
         <p style="text-align: center;">Tài liệu nội bộ - Doãn Nguyễn Gia Khang</p>
         
         <div class="menu-section">
-            <h3>Tạo câu hỏi ngẫu nhiên</h3>
-            <button class="btn btn-outline" onclick="startRandomQuiz(10)">Làm 10 câu</button>
-            <button class="btn btn-outline" onclick="startRandomQuiz(20)">Làm 20 câu</button>
-            <button class="btn btn-outline" onclick="startRandomQuiz(30)">Làm 30 câu</button>
-            <button class="btn btn-outline" onclick="startRandomQuiz(50)">Làm 50 câu</button>
-            
-            <h3 style="margin-top: 20px;">Tạo câu hỏi cố định (Toàn bộ)</h3>
-            <button class="btn" onclick="startFixedQuiz()">Làm toàn bộ 323 câu</button>
+            <h3>Tạo danh sách câu hỏi (Làm hàng loạt)</h3>
+            <button class="btn btn-outline" onclick="startRandomQuiz(10)">Làm 10 câu ngẫu nhiên</button>
+            <button class="btn btn-outline" onclick="startRandomQuiz(20)">Làm 20 câu ngẫu nhiên</button>
+            <button class="btn btn-outline" onclick="startRandomQuiz(40)">Làm 40 câu ngẫu nhiên</button>
+            <button class="btn" onclick="startFixedQuiz()">Làm toàn bộ (Thứ tự gốc)</button>
 
-            <h3 style="margin-top: 20px;">Học từng câu (Quiz)</h3>
+            <h3 style="margin-top: 20px;">Học từng câu (Quiz - Có nút quay lại)</h3>
             <button class="btn btn-outline" onclick="startSingleQuiz(10, true)">Quiz 10 câu (Ngẫu nhiên)</button>
             <button class="btn btn-outline" onclick="startSingleQuiz(20, true)">Quiz 20 câu (Ngẫu nhiên)</button>
-            <button class="btn btn-outline" onclick="startSingleQuiz(questionBank.length, true)">Quiz toàn bộ (Ngẫu nhiên)</button>
-            <button class="btn" onclick="startSingleQuiz(questionBank.length, false)">Quiz toàn bộ (Thứ tự gốc)</button>
+            <button class="btn" onclick="startSingleQuiz(questionBank.length, false)">Quiz toàn bộ (Theo thứ tự gốc)</button>
         </div>
     </div>
 
@@ -113,57 +133,59 @@
         <div id="questions-container"></div>
         <div class="controls" id="submit-controls">
             <button class="btn" onclick="submitQuiz()">Nộp bài</button>
-            <button class="btn btn-outline" onclick="goHome()">Quay về</button>
+            <button class="btn btn-outline" onclick="goHome()">Quay về trang chủ</button>
         </div>
     </div>
 
     <div id="single-quiz-screen" style="display: none;">
         <div id="single-question-container"></div>
-        <div class="controls" id="single-controls" style="display: none;">
-            <button class="btn btn-outline" id="btn-prev-single" onclick="prevSingleQuestion()">Câu trước</button>
-            <button class="btn" id="btn-next-single" onclick="nextSingleQuestion()">Đi tiếp</button>
+        <div class="controls" id="single-navigation">
+            <button class="btn btn-secondary" id="btn-prev" onclick="prevSingleQuestion()" style="display: none;">Câu trước</button>
+            <button class="btn" id="btn-next" onclick="nextSingleQuestion()" style="display: none;">Đi tiếp</button>
         </div>
         <div class="controls" style="margin-top: 20px;">
-            <button class="btn btn-outline" onclick="goHome()">Quay về</button>
+            <button class="btn btn-outline" onclick="goHome()">Quay về trang chủ</button>
         </div>
     </div>
 
     <div id="result-screen" style="display: none;">
         <div id="score-display"></div>
         <div class="controls">
-            <button class="btn" onclick="regenerateQuiz()">Tạo lại câu hỏi</button>
-            <button class="btn btn-outline" onclick="retryQuiz()">Làm lại</button>
-            <button class="btn btn-outline" onclick="goHome()">Quay về</button>
+            <button class="btn" onclick="regenerateQuiz()">Làm bộ mới</button>
+            <button class="btn btn-outline" onclick="goHome()">Quay về trang chủ</button>
         </div>
     </div>
 </div>
 
-<script>
-    /* =======================================================
-       DỮ LIỆU CÂU HỎI
-       Hãy dán toàn bộ 323 câu hỏi vào mảng questionBank này
-    ======================================================= */
-    const questionBank = [
-        {
-            id: 1,
-            text: "Thuật ngữ 'kinh tế - chính trị' được sử dụng lần đầu tiên vào năm nào?",
-            options: { A: "Năm 1610", B: "Năm 1615", C: "Năm 1815", D: "Năm 1848" },
-            correct: "B",
-            correctText: "Năm 1615"
-        },
-        // ... (DÁN TOÀN BỘ CÂU HỎI CỦA BẠN VÀO ĐÂY) ...
-    ];
-
-    /* =======================================================
-       LOGIC XỬ LÝ (JS)
-    ======================================================= */
+<script src="questions.js"></script>
+    <script>
     let currentQuestions = [];
-    let currentMode = ''; 
-    let currentCount = 0; 
-    
-    // Các biến dùng riêng cho chế độ làm từng câu (Quiz)
+    let userChoices = []; 
     let currentSingleIndex = 0;
-    let userAnswers = []; // Mảng lưu lại các đáp án người dùng đã chọn
+    let currentMode = ''; 
+    let currentCount = 0;
+    let isRandomMode = false;
+
+    // 1. CHỨC NĂNG SÁNG TỐI
+    function toggleTheme() {
+        const body = document.body;
+        const btn = document.getElementById('theme-btn');
+        if (body.classList.contains('dark-theme')) {
+            body.classList.remove('dark-theme');
+            btn.innerText = "🌙 Chế độ tối";
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.classList.add('dark-theme');
+            btn.innerText = "☀️ Chế độ sáng";
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    // Tự động load theme đã lưu
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-theme');
+        document.getElementById('theme-btn').innerText = "☀️ Chế độ sáng";
+    }
 
     function shuffleArray(array) {
         let arr = [...array];
@@ -174,218 +196,122 @@
         return arr;
     }
 
-    // Chuyển đổi giữa các màn hình
     function switchScreen(screenId) {
-        document.getElementById('home-screen').style.display = 'none';
-        document.getElementById('quiz-screen').style.display = 'none';
-        document.getElementById('result-screen').style.display = 'none';
-        document.getElementById('single-quiz-screen').style.display = 'none';
-        
-        if(screenId === 'quiz-screen') {
-            document.getElementById('submit-controls').style.display = 'flex';
-        }
+        ['home-screen', 'quiz-screen', 'single-quiz-screen', 'result-screen'].forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
         document.getElementById(screenId).style.display = 'block';
     }
 
-    // --- CÁC HÀM CHO CHẾ ĐỘ LÀM DÀI ---
+    // 2. LOGIC LÀM HÀNG LOẠT
     function startRandomQuiz(count) {
-        currentMode = 'random';
+        currentMode = 'batch';
+        isRandomMode = true;
         currentCount = count;
-        let actualCount = Math.min(count, questionBank.length);
-        let shuffled = shuffleArray(questionBank);
-        currentQuestions = shuffled.slice(0, actualCount);
-        renderQuestions();
+        currentQuestions = shuffleArray(questionBank).slice(0, count);
+        renderBatchQuestions();
         switchScreen('quiz-screen');
     }
 
     function startFixedQuiz() {
-        currentMode = 'fixed';
-        currentCount = questionBank.length;
-        currentQuestions = [...questionBank]; 
-        renderQuestions();
+        currentMode = 'batch';
+        isRandomMode = false;
+        currentQuestions = [...questionBank];
+        renderBatchQuestions();
         switchScreen('quiz-screen');
     }
 
-    function renderQuestions() {
+    function renderBatchQuestions() {
         const container = document.getElementById('questions-container');
-        container.innerHTML = ''; 
-        
-        currentQuestions.forEach((q, index) => {
-            let html = `
-                <div class="question-box" id="qbox-${index}">
-                    <div class="question-title">Câu ${index + 1}: ${q.text}</div>
-                    ${Object.keys(q.options).map(key => `
+        container.innerHTML = '';
+        currentQuestions.forEach((q, i) => {
+            container.innerHTML += `
+                <div class="question-box" id="batch-box-${i}">
+                    <div class="question-title">Câu ${i + 1}: ${q.text}</div>
+                    ${Object.keys(q.options).map(k => `
                         <label class="option">
-                            <input type="radio" name="q-${index}" value="${key}">
-                            ${key}. ${q.options[key]}
+                            <input type="radio" name="batch-q-${i}" value="${k}"> ${k}. ${q.options[k]}
                         </label>
                     `).join('')}
-                    <div class="answer-reveal" id="reveal-${index}">
-                        Đáp án đúng: ${q.correctText}
-                    </div>
-                </div>
-            `;
-            container.innerHTML += html;
+                    <div class="answer-reveal" id="batch-reveal-${i}">Đáp án đúng: ${q.correctText}</div>
+                </div>`;
         });
         window.scrollTo(0, 0);
     }
 
     function submitQuiz() {
         let score = 0;
-        
-        currentQuestions.forEach((q, index) => {
-            let selected = document.querySelector(`input[name="q-${index}"]:checked`);
-            let box = document.getElementById(`qbox-${index}`);
-            let reveal = document.getElementById(`reveal-${index}`);
-            
+        currentQuestions.forEach((q, i) => {
+            let selected = document.querySelector(`input[name="batch-q-${i}"]:checked`);
+            let box = document.getElementById(`batch-box-${i}`);
+            let reveal = document.getElementById(`batch-reveal-${i}`);
             box.classList.remove('correct-border', 'wrong-border');
-
-            if (selected) {
-                if (selected.value === q.correct) {
-                    score++;
-                    box.classList.add('correct-border');
-                } else {
-                    box.classList.add('wrong-border');
-                    reveal.style.display = 'block';
-                }
+            if (selected && selected.value === q.correct) {
+                score++;
+                box.classList.add('correct-border');
             } else {
                 box.classList.add('wrong-border');
                 reveal.style.display = 'block';
             }
-            
-            let inputs = document.querySelectorAll(`input[name="q-${index}"]`);
-            inputs.forEach(input => input.disabled = true);
+            document.querySelectorAll(`input[name="batch-q-${i}"]`).forEach(inp => inp.disabled = true);
         });
-
-        document.getElementById('score-display').innerText = `Kết quả: Bạn làm đúng ${score} / ${currentQuestions.length} câu!`;
-        document.getElementById('submit-controls').style.display = 'none'; 
-        document.getElementById('result-screen').style.display = 'block'; 
+        document.getElementById('score-display').innerText = `Kết quả: ${score} / ${currentQuestions.length}`;
+        switchScreen('result-screen');
+        window.scrollTo(0, 0);
     }
 
-    // --- CÁC HÀM CHO CHẾ ĐỘ LÀM TỪNG CÂU (QUIZ) ---
-    function startSingleQuiz(count, isRandom = true) {
-        currentMode = isRandom ? 'single-random' : 'single-fixed';
+    // 3. LOGIC QUIZ TỪNG CÂU (CÓ NÚT CÂU TRƯỚC)
+    function startSingleQuiz(count, random) {
+        currentMode = 'single';
+        isRandomMode = random;
         currentCount = count;
         currentSingleIndex = 0;
-        
         let actualCount = Math.min(count, questionBank.length);
-        if (isRandom) {
-            let shuffled = shuffleArray(questionBank);
-            currentQuestions = shuffled.slice(0, actualCount);
-        } else {
-            currentQuestions = questionBank.slice(0, actualCount);
-        }
-        
-        userAnswers = new Array(actualCount).fill(null); // Khởi tạo mảng lưu đáp án trống
-        
+        currentQuestions = random ? shuffleArray(questionBank).slice(0, actualCount) : questionBank.slice(0, actualCount);
+        userChoices = new Array(currentQuestions.length).fill(null);
         renderSingleQuestion();
         switchScreen('single-quiz-screen');
     }
 
     function renderSingleQuestion() {
         const container = document.getElementById('single-question-container');
-        let q = currentQuestions[currentSingleIndex];
-        
-        let html = `
-            <div class="question-box" id="single-qbox">
+        const q = currentQuestions[currentSingleIndex];
+        const savedChoice = userChoices[currentSingleIndex];
+        container.innerHTML = `
+            <div class="question-box" id="single-box">
                 <div class="question-title">Câu ${currentSingleIndex + 1} / ${currentQuestions.length}: ${q.text}</div>
-                ${Object.keys(q.options).map(key => `
+                ${Object.keys(q.options).map(k => `
                     <label class="option">
-                        <input type="radio" name="single-q" value="${key}" onchange="checkSingleAnswer()">
-                        ${key}. ${q.options[key]}
+                        <input type="radio" name="sq" value="${k}" 
+                            ${savedChoice === k ? 'checked' : ''} 
+                            ${savedChoice !== null ? 'disabled' : ''} 
+                            onchange="handleSingleChoice(this)"> 
+                        ${k}. ${q.options[k]}
                     </label>
                 `).join('')}
-                <div class="answer-reveal" id="single-reveal"></div>
-            </div>
-        `;
-        container.innerHTML = html;
-
-        // Xử lý hiển thị các nút điều hướng
-        const controls = document.getElementById('single-controls');
-        const prevBtn = document.getElementById('btn-prev-single');
-        const nextBtn = document.getElementById('btn-next-single');
-
-        prevBtn.style.display = currentSingleIndex > 0 ? 'inline-block' : 'none'; // Ẩn nút "Câu trước" ở câu đầu tiên
-
-        let previousAnswer = userAnswers[currentSingleIndex];
-        
-        // Nếu câu này đã được người dùng trả lời trước đó
-        if (previousAnswer) {
-            let radio = document.querySelector(`input[name="single-q"][value="${previousAnswer}"]`);
-            if(radio) radio.checked = true;
-
-            let box = document.getElementById('single-qbox');
-            let reveal = document.getElementById('single-reveal');
-            let inputs = document.querySelectorAll(`input[name="single-q"]`);
-            
-            inputs.forEach(input => input.disabled = true); // Khóa lại không cho chọn
-            
-            if (previousAnswer === q.correct) {
-                box.classList.add('correct-border');
-                reveal.innerHTML = "🎉 <b>Chính xác!</b> Đáp án: " + q.correctText;
-                reveal.style.color = "var(--correct-color)";
-            } else {
-                box.classList.add('wrong-border');
-                reveal.innerHTML = "❌ <b>Sai rồi!</b> Đáp án đúng: " + q.correctText;
-                reveal.style.color = "var(--wrong-color)";
-            }
-            reveal.style.display = 'block';
-
-            controls.style.display = 'flex';
-            nextBtn.style.display = 'inline-block';
-            nextBtn.innerText = (currentSingleIndex === currentQuestions.length - 1) ? "Xem kết quả" : "Đi tiếp";
-        } else {
-            // Nếu chưa trả lời
-            controls.style.display = currentSingleIndex > 0 ? 'flex' : 'none'; 
-            nextBtn.style.display = 'none'; // Ẩn nút đi tiếp, bắt buộc phải chọn đáp án mới cho qua
-        }
-
-        window.scrollTo(0, 0);
+                <div class="answer-reveal" id="single-reveal" style="${savedChoice !== null ? 'display:block' : ''}">
+                    ${savedChoice !== null ? (savedChoice === q.correct ? '🎉 Chính xác!' : '❌ Sai rồi! Đáp án đúng: ' + q.correctText) : ''}
+                </div>
+            </div>`;
+        if (savedChoice !== null) document.getElementById('single-box').classList.add(savedChoice === q.correct ? 'correct-border' : 'wrong-border');
+        updateNavigationButtons();
     }
 
-    function checkSingleAnswer() {
-        let q = currentQuestions[currentSingleIndex];
-        let selected = document.querySelector(`input[name="single-q"]:checked`);
-        let box = document.getElementById('single-qbox');
-        let reveal = document.getElementById('single-reveal');
-        
-        if (!selected) return; 
-        
-        // Lưu lại đáp án vào mảng
-        userAnswers[currentSingleIndex] = selected.value;
-
-        // Khóa không cho chọn lại
-        let inputs = document.querySelectorAll(`input[name="single-q"]`);
-        inputs.forEach(input => input.disabled = true);
-        
-        // Chấm điểm và hiển thị giao diện ngay lập tức
-        if (selected.value === q.correct) {
-            box.classList.add('correct-border');
-            reveal.innerHTML = "🎉 <b>Chính xác!</b> Đáp án: " + q.correctText;
-            reveal.style.color = "var(--correct-color)";
-        } else {
-            box.classList.add('wrong-border');
-            reveal.innerHTML = "❌ <b>Sai rồi!</b> Đáp án đúng: " + q.correctText;
-            reveal.style.color = "var(--wrong-color)";
-        }
-        reveal.style.display = 'block';
-        
-        // Hiện nút Đi tiếp
-        document.getElementById('single-controls').style.display = 'flex';
-        let nextBtn = document.getElementById('btn-next-single');
-        nextBtn.style.display = 'inline-block';
-
-        if (currentSingleIndex === currentQuestions.length - 1) {
-            nextBtn.innerText = "Xem kết quả";
-        } else {
-            nextBtn.innerText = "Đi tiếp";
-        }
+    function handleSingleChoice(input) {
+        const q = currentQuestions[currentSingleIndex];
+        userChoices[currentSingleIndex] = input.value;
+        document.querySelectorAll('input[name="sq"]').forEach(i => i.disabled = true);
+        renderSingleQuestion();
     }
 
-    function prevSingleQuestion() {
-        if (currentSingleIndex > 0) {
-            currentSingleIndex--;
-            renderSingleQuestion();
+    function updateNavigationButtons() {
+        document.getElementById('btn-prev').style.display = currentSingleIndex > 0 ? 'inline-block' : 'none';
+        const btnNext = document.getElementById('btn-next');
+        if (userChoices[currentSingleIndex] !== null) {
+            btnNext.style.display = 'inline-block';
+            btnNext.innerText = currentSingleIndex === currentQuestions.length - 1 ? "Xem kết quả" : "Đi tiếp";
+        } else {
+            btnNext.style.display = 'none';
         }
     }
 
@@ -394,50 +320,20 @@
             currentSingleIndex++;
             renderSingleQuestion();
         } else {
-            // Tính tổng điểm dựa trên mảng đáp án đã lưu
-            let finalScore = 0;
-            userAnswers.forEach((ans, index) => {
-                if (ans === currentQuestions[index].correct) {
-                    finalScore++;
-                }
-            });
-
-            document.getElementById('score-display').innerText = `Kết quả: Bạn làm đúng ${finalScore} / ${currentQuestions.length} câu!`;
+            let score = 0;
+            userChoices.forEach((c, i) => { if (c === currentQuestions[i].correct) score++; });
+            document.getElementById('score-display').innerText = `Kết quả: ${score} / ${currentQuestions.length}`;
             switchScreen('result-screen');
         }
     }
 
-    // --- CÁC HÀM TIỆN ÍCH CHUNG ---
+    function prevSingleQuestion() { if (currentSingleIndex > 0) { currentSingleIndex--; renderSingleQuestion(); } }
+
     function regenerateQuiz() {
-        if (currentMode === 'random') {
-            startRandomQuiz(currentCount); 
-        } else if (currentMode === 'single-random') {
-            startSingleQuiz(currentCount, true); 
-        } else if (currentMode === 'single-fixed') {
-            startSingleQuiz(currentCount, false); 
-        } else {
-            startFixedQuiz(); 
-        }
+        currentMode === 'batch' ? (isRandomMode ? startRandomQuiz(currentCount) : startFixedQuiz()) : startSingleQuiz(currentCount, isRandomMode);
     }
 
-    function retryQuiz() {
-        if (currentMode.startsWith('single')) {
-            currentSingleIndex = 0;
-            userAnswers = new Array(currentQuestions.length).fill(null); // Xóa trắng đáp án cũ
-            renderSingleQuestion();
-            switchScreen('single-quiz-screen');
-        } else {
-            renderQuestions(); 
-            document.getElementById('result-screen').style.display = 'none';
-            document.getElementById('submit-controls').style.display = 'flex';
-            window.scrollTo(0, 0);
-        }
-    }
-
-    function goHome() {
-        switchScreen('home-screen');
-    }
+    function goHome() { switchScreen('home-screen'); }
 </script>
-
 </body>
 </html>
