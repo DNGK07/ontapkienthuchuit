@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kho Trắc Nghiệm KTCT - Doãn Nguyễn Gia Khang</title>
+    <title>Hệ Thống Ôn Tập - Doãn Nguyễn Gia Khang</title>
     <style>
         /* Định nghĩa biến màu sắc cho 2 chế độ */
         :root {
@@ -15,6 +15,7 @@
             --correct-color: #28a745;
             --wrong-color: #dc3545;
             --box-bg: #ffffff;
+            --card-hover: rgba(0, 86, 179, 0.1);
         }
 
         body.dark-theme {
@@ -24,6 +25,7 @@
             --border-color: #333333;
             --box-bg: #252525;
             --primary: #4791ff;
+            --card-hover: rgba(71, 145, 255, 0.1);
         }
 
         body {
@@ -62,6 +64,36 @@
         h1 { text-align: center; color: var(--primary); margin-top: 10px; }
         .menu-section { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
         
+        /* Layout cho trang chủ Portal */
+        .portal-grid {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .subject-card {
+            background: var(--box-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px 20px;
+            width: 260px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .subject-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            background-color: var(--card-hover);
+        }
+
+        .subject-card h2 { color: var(--primary); margin-top: 0; margin-bottom: 10px; }
+        .subject-card p { margin: 0; font-size: 15px; opacity: 0.8; }
+
         .btn {
             padding: 12px 20px;
             font-size: 16px;
@@ -80,6 +112,7 @@
         }
         .btn-outline:hover { background-color: var(--primary); color: white; }
         .btn-secondary { background-color: #6c757d; }
+        .btn-back { margin-top: 20px; width: 100%; }
         
         .question-box { 
             margin-bottom: 25px; 
@@ -108,12 +141,28 @@
         #score-display { text-align: center; font-size: 24px; color: var(--primary); margin-bottom: 20px;}
     </style>
 </head>
-<body class="light-theme"> <div class="container" id="app">
+<body class="light-theme"> 
+<div class="container" id="app">
     <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Chế độ tối</button>
     
-    <div id="home-screen">
-        <h1>Hệ Thống Ôn Tập KTCT</h1>
+    <div id="portal-screen">
+        <h1>Hệ Thống Ôn Tập</h1>
         <p style="text-align: center;">Tài liệu nội bộ - Doãn Nguyễn Gia Khang</p>
+        
+        <div class="portal-grid">
+            <div class="subject-card" onclick="selectSubject('ktct')">
+                <h2>📚 Ôn tập KTCT</h2>
+                <p>Kinh tế Chính trị Mác - Lênin</p>
+            </div>
+            <div class="subject-card" onclick="selectSubject('vsvtp')">
+                <h2>🔬 Ôn tập VSVTP</h2>
+                <p>Vi sinh vật thực phẩm</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="home-screen" style="display: none;">
+        <h1 id="subject-title">Hệ Thống Ôn Tập</h1>
         
         <div class="menu-section">
             <h3>Tạo danh sách câu hỏi (Làm hàng loạt)</h3>
@@ -125,7 +174,9 @@
             <h3 style="margin-top: 20px;">Học từng câu (Quiz)</h3>
             <button class="btn btn-outline" onclick="startSingleQuiz(10, true)">Quiz 10 câu (Ngẫu nhiên)</button>
             <button class="btn btn-outline" onclick="startSingleQuiz(20, true)">Quiz 20 câu (Ngẫu nhiên)</button>
-            <button class="btn" onclick="startSingleQuiz(questionBank.length, false)">Quiz toàn bộ (Theo thứ tự gốc)</button>
+            <button class="btn" onclick="startSingleQuiz(activeBank.length, false)">Quiz toàn bộ (Theo thứ tự gốc)</button>
+            
+            <button class="btn btn-secondary btn-back" onclick="goPortal()">🔙 Quay lại chọn môn khác</button>
         </div>
     </div>
 
@@ -133,7 +184,7 @@
         <div id="questions-container"></div>
         <div class="controls" id="submit-controls">
             <button class="btn" onclick="submitQuiz()">Nộp bài</button>
-            <button class="btn btn-outline" onclick="goHome()">Quay về trang chủ</button>
+            <button class="btn btn-outline" onclick="goHome()">Trở về Menu môn học</button>
         </div>
     </div>
 
@@ -144,7 +195,7 @@
             <button class="btn" id="btn-next" onclick="nextSingleQuestion()" style="display: none;">Đi tiếp</button>
         </div>
         <div class="controls" style="margin-top: 20px;">
-            <button class="btn btn-outline" onclick="goHome()">Quay về trang chủ</button>
+            <button class="btn btn-outline" onclick="goHome()">Trở về Menu môn học</button>
         </div>
     </div>
 
@@ -152,13 +203,15 @@
         <div id="score-display"></div>
         <div class="controls">
             <button class="btn" onclick="regenerateQuiz()">Làm bộ mới</button>
-            <button class="btn btn-outline" onclick="goHome()">Quay về trang chủ</button>
+            <button class="btn btn-outline" onclick="goHome()">Trở về Menu môn học</button>
         </div>
     </div>
 </div>
 
 <script src="questions.js"></script>
-    <script>
+<script>
+    // Dữ liệu ngân hàng câu hỏi đang được dùng
+    let activeBank = []; 
     let currentQuestions = [];
     let userChoices = []; 
     let currentSingleIndex = 0;
@@ -181,7 +234,6 @@
         }
     }
 
-    // Tự động load theme đã lưu
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-theme');
         document.getElementById('theme-btn').innerText = "☀️ Chế độ sáng";
@@ -197,18 +249,40 @@
     }
 
     function switchScreen(screenId) {
-        ['home-screen', 'quiz-screen', 'single-quiz-screen', 'result-screen'].forEach(id => {
+        ['portal-screen', 'home-screen', 'quiz-screen', 'single-quiz-screen', 'result-screen'].forEach(id => {
             document.getElementById(id).style.display = 'none';
         });
         document.getElementById(screenId).style.display = 'block';
     }
 
-    // 2. LOGIC LÀM HÀNG LOẠT
+    // 2. CHỌN MÔN HỌC
+    function selectSubject(subject) {
+        if (subject === 'ktct') {
+            activeBank = ktctBank;
+            document.getElementById('subject-title').innerText = "Ôn Tập Kinh Tế Chính Trị";
+        } else if (subject === 'vsvtp') {
+            activeBank = vsvtpBank;
+            document.getElementById('subject-title').innerText = "Ôn Tập Vi Sinh Vật Thực Phẩm";
+        }
+        switchScreen('home-screen');
+    }
+
+    function goPortal() {
+        switchScreen('portal-screen');
+    }
+
+    function goHome() { 
+        switchScreen('home-screen'); 
+    }
+
+    // 3. LOGIC LÀM HÀNG LOẠT
     function startRandomQuiz(count) {
         currentMode = 'batch';
         isRandomMode = true;
         currentCount = count;
-        currentQuestions = shuffleArray(questionBank).slice(0, count);
+        // Tránh lỗi nếu yêu cầu nhiều hơn số câu có trong bank
+        let actualCount = Math.min(count, activeBank.length);
+        currentQuestions = shuffleArray(activeBank).slice(0, actualCount);
         renderBatchQuestions();
         switchScreen('quiz-screen');
     }
@@ -216,7 +290,7 @@
     function startFixedQuiz() {
         currentMode = 'batch';
         isRandomMode = false;
-        currentQuestions = [...questionBank];
+        currentQuestions = [...activeBank];
         renderBatchQuestions();
         switchScreen('quiz-screen');
     }
@@ -260,14 +334,14 @@
         window.scrollTo(0, 0);
     }
 
-    // 3. LOGIC QUIZ TỪNG CÂU (CÓ NÚT CÂU TRƯỚC)
+    // 4. LOGIC QUIZ TỪNG CÂU
     function startSingleQuiz(count, random) {
         currentMode = 'single';
         isRandomMode = random;
         currentCount = count;
         currentSingleIndex = 0;
-        let actualCount = Math.min(count, questionBank.length);
-        currentQuestions = random ? shuffleArray(questionBank).slice(0, actualCount) : questionBank.slice(0, actualCount);
+        let actualCount = Math.min(count, activeBank.length);
+        currentQuestions = random ? shuffleArray(activeBank).slice(0, actualCount) : activeBank.slice(0, actualCount);
         userChoices = new Array(currentQuestions.length).fill(null);
         renderSingleQuestion();
         switchScreen('single-quiz-screen');
@@ -332,8 +406,6 @@
     function regenerateQuiz() {
         currentMode === 'batch' ? (isRandomMode ? startRandomQuiz(currentCount) : startFixedQuiz()) : startSingleQuiz(currentCount, isRandomMode);
     }
-
-    function goHome() { switchScreen('home-screen'); }
 </script>
 </body>
 </html>
