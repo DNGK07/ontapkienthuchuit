@@ -1,5 +1,5 @@
 // File: ktct.js
-const questionBank = [
+const ktctBank = [
     {
         id: 1,
         text: "Thuật ngữ 'kinh tế - chính trị' được sử dụng lần đầu tiên vào năm nào?",
