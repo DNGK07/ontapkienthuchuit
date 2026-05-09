@@ -4,69 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kho Trắc Nghiệm KTCT - Doãn Nguyễn Gia Khang</title>
-    <meta name="description" content="Hệ thống ôn tập trắc nghiệm môn Kinh tế chính trị Mác - Lênin với hơn 300 câu hỏi.">
-    <meta name="keywords" content="trắc nghiệm KTCT, kinh tế chính trị, ôn thi kinh tế chính trị, Doãn Nguyễn Gia Khang">
-    <meta name="author" content="Doãn Nguyễn Gia Khang">
-    
     <style>
         :root {
             --primary: #0056b3;
             --bg-color: #f4f7f6;
             --correct-color: #28a745;
             --wrong-color: #dc3545;
-            --text-color: #333;
-            --container-bg: #fff;
-            --border-color: #ddd;
         }
-
-        .dark-mode {
-            --primary: #4dabf7; 
-            --bg-color: #121212; 
-            --text-color: #f0f0f0; 
-            --container-bg: #1e1e1e; 
-            --border-color: #444; 
-        }
-
         body {
             font-family: Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
             margin: 0;
-            padding: 10px;
-            transition: 0.3s;
+            padding: 20px;
+            color: #333;
         }
         .container {
             max-width: 800px;
-            margin: 40px auto; /* Chừa khoảng trống phía trên cho nút theme */
-            background: var(--container-bg);
+            margin: 0 auto;
+            background: #fff;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: relative;
         }
-        h1 { text-align: center; color: var(--primary); }
-        
-        /* === NÚT CHUYỂN CHẾ ĐỘ LUÔN HIỆN HỮU === */
-        .theme-toggle {
-            position: fixed; /* Cố định ở góc màn hình */
-            top: 15px;
-            right: 15px;
-            z-index: 1000;
-            cursor: pointer;
-            user-select: none;
-            background: var(--container-bg);
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            border-radius: 20px;
+        h1 {
+            text-align: center;
+            color: var(--primary);
+        }
+        .menu-section {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
         }
-        .theme-toggle span { font-weight: bold; font-size: 14px; }
-        #theme-icon { font-size: 18px; }
-
-        .menu-section { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
         .btn {
             padding: 12px 20px;
             font-size: 16px;
@@ -77,53 +46,66 @@
             color: white;
             transition: 0.3s;
         }
+        .btn:hover { background-color: #004494; }
         .btn-outline {
             background-color: transparent;
             color: var(--primary);
             border: 2px solid var(--primary);
         }
-        .dark-mode .btn { color: #000; } /* Chữ đen trên nền nút sáng ở dark mode cho dễ đọc */
-
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
         .question-box {
             margin-bottom: 25px;
             padding: 15px;
-            border: 1px solid var(--border-color);
+            border: 1px solid #ddd;
             border-radius: 5px;
         }
-        .correct-border { border: 2px solid var(--correct-color) !important; background-color: rgba(40, 167, 69, 0.1); }
-        .wrong-border { border: 2px solid var(--wrong-color) !important; background-color: rgba(220, 53, 69, 0.1); }
+        .question-title { font-weight: bold; margin-bottom: 15px; }
+        .option {
+            display: block;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        /* Style cho kết quả */
+        .correct-border { border: 2px solid var(--correct-color) !important; background-color: #e9f7ef; }
+        .wrong-border { border: 2px solid var(--wrong-color) !important; background-color: #fceceb; }
         .answer-reveal {
-            margin-top: 10px; padding: 10px;
-            background: rgba(40, 167,  green, 0.1);
+            margin-top: 10px;
+            padding: 10px;
+            background: #e9f7ef;
             color: var(--correct-color);
             font-weight: bold;
             border-left: 4px solid var(--correct-color);
             display: none;
         }
         .controls { display: flex; gap: 10px; margin-top: 20px; justify-content: center;}
+        #score-display { text-align: center; font-size: 24px; color: var(--primary); margin-bottom: 20px;}
     </style>
 </head>
 <body>
 
-<div class="theme-toggle" onclick="toggleTheme()">
-    <span>Chế độ</span>
-    <span id="theme-icon">☀️</span>
-</div>
-
 <div class="container" id="app">
     <div id="home-screen">
         <h1>Hệ Thống Ôn Tập KTCT</h1>
+        <p style="text-align: center;">Tài liệu nội bộ - Doãn Nguyễn Gia Khang</p>
         
         <div class="menu-section">
             <h3>Tạo câu hỏi ngẫu nhiên</h3>
             <button class="btn btn-outline" onclick="startRandomQuiz(10)">Làm 10 câu</button>
             <button class="btn btn-outline" onclick="startRandomQuiz(20)">Làm 20 câu</button>
+            <button class="btn btn-outline" onclick="startRandomQuiz(30)">Làm 30 câu</button>
             <button class="btn btn-outline" onclick="startRandomQuiz(50)">Làm 50 câu</button>
+            
+            <h3 style="margin-top: 20px;">Tạo câu hỏi cố định (Toàn bộ)</h3>
             <button class="btn" onclick="startFixedQuiz()">Làm toàn bộ 323 câu</button>
 
-            <h3 style="margin-top: 15px;">Học từng câu (Quiz)</h3>
-            <button class="btn btn-outline" onclick="startSingleQuiz(10)">Quiz 10 câu</button>
-            <button class="btn btn-outline" onclick="startSingleQuiz(questionBank.length)">Quiz toàn bộ</button>
+            <h3 style="margin-top: 20px;">Học từng câu (Quiz)</h3>
+            <button class="btn btn-outline" onclick="startSingleQuiz(10, true)">Quiz 10 câu (Ngẫu nhiên)</button>
+            <button class="btn btn-outline" onclick="startSingleQuiz(20, true)">Quiz 20 câu (Ngẫu nhiên)</button>
+            <button class="btn btn-outline" onclick="startSingleQuiz(questionBank.length, true)">Quiz toàn bộ (Ngẫu nhiên)</button>
+            <button class="btn" onclick="startSingleQuiz(questionBank.length, false)">Quiz toàn bộ (Thứ tự gốc)</button>
         </div>
     </div>
 
@@ -138,15 +120,16 @@
     <div id="single-quiz-screen" style="display: none;">
         <div id="single-question-container"></div>
         <div class="controls" id="single-controls" style="display: none;">
-            <button class="btn" onclick="nextSingleQuestion()">Đi tiếp</button>
+            <button class="btn btn-outline" id="btn-prev-single" onclick="prevSingleQuestion()">Câu trước</button>
+            <button class="btn" id="btn-next-single" onclick="nextSingleQuestion()">Đi tiếp</button>
         </div>
-        <div class="controls" style="margin-top: 15px;">
+        <div class="controls" style="margin-top: 20px;">
             <button class="btn btn-outline" onclick="goHome()">Quay về</button>
         </div>
     </div>
 
     <div id="result-screen" style="display: none;">
-        <div id="score-display" style="text-align: center; font-size: 22px; margin-bottom: 20px;"></div>
+        <div id="score-display"></div>
         <div class="controls">
             <button class="btn" onclick="regenerateQuiz()">Tạo lại câu hỏi</button>
             <button class="btn btn-outline" onclick="retryQuiz()">Làm lại</button>
@@ -155,37 +138,32 @@
     </div>
 </div>
 
-<script src="questions.js"></script>
-
 <script>
-    /* LOGIC CHUYỂN ĐỔI SÁNG TỐI */
-    function toggleTheme() {
-        const body = document.body;
-        const icon = document.getElementById('theme-icon');
-        body.classList.toggle('dark-mode');
-        if (body.classList.contains('dark-mode')) {
-            icon.innerText = '🌙';
-            localStorage.setItem('ktct_theme', 'dark');
-        } else {
-            icon.innerText = '☀️';
-            localStorage.setItem('ktct_theme', 'light');
-        }
-    }
+    /* =======================================================
+       DỮ LIỆU CÂU HỎI
+       Hãy dán toàn bộ 323 câu hỏi vào mảng questionBank này
+    ======================================================= */
+    const questionBank = [
+        {
+            id: 1,
+            text: "Thuật ngữ 'kinh tế - chính trị' được sử dụng lần đầu tiên vào năm nào?",
+            options: { A: "Năm 1610", B: "Năm 1615", C: "Năm 1815", D: "Năm 1848" },
+            correct: "B",
+            correctText: "Năm 1615"
+        },
+        // ... (DÁN TOÀN BỘ CÂU HỎI CỦA BẠN VÀO ĐÂY) ...
+    ];
 
-    // Khôi phục chế độ khi load trang
-    window.onload = () => {
-        if (localStorage.getItem('ktct_theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('theme-icon').innerText = '🌙';
-        }
-    };
-
-    /* LOGIC XỬ LÝ CHƯƠNG TRÌNH */
+    /* =======================================================
+       LOGIC XỬ LÝ (JS)
+    ======================================================= */
     let currentQuestions = [];
     let currentMode = ''; 
     let currentCount = 0; 
+    
+    // Các biến dùng riêng cho chế độ làm từng câu (Quiz)
     let currentSingleIndex = 0;
-    let singleScore = 0;
+    let userAnswers = []; // Mảng lưu lại các đáp án người dùng đã chọn
 
     function shuffleArray(array) {
         let arr = [...array];
@@ -196,86 +174,173 @@
         return arr;
     }
 
+    // Chuyển đổi giữa các màn hình
     function switchScreen(screenId) {
         document.getElementById('home-screen').style.display = 'none';
         document.getElementById('quiz-screen').style.display = 'none';
         document.getElementById('result-screen').style.display = 'none';
         document.getElementById('single-quiz-screen').style.display = 'none';
+        
+        if(screenId === 'quiz-screen') {
+            document.getElementById('submit-controls').style.display = 'flex';
+        }
         document.getElementById(screenId).style.display = 'block';
-        window.scrollTo(0, 0);
     }
 
+    // --- CÁC HÀM CHO CHẾ ĐỘ LÀM DÀI ---
     function startRandomQuiz(count) {
-        currentMode = 'random'; currentCount = count;
+        currentMode = 'random';
+        currentCount = count;
         let actualCount = Math.min(count, questionBank.length);
-        currentQuestions = shuffleArray(questionBank).slice(0, actualCount);
+        let shuffled = shuffleArray(questionBank);
+        currentQuestions = shuffled.slice(0, actualCount);
         renderQuestions();
         switchScreen('quiz-screen');
     }
 
     function startFixedQuiz() {
-        currentMode = 'fixed'; currentQuestions = [...questionBank];
+        currentMode = 'fixed';
+        currentCount = questionBank.length;
+        currentQuestions = [...questionBank]; 
         renderQuestions();
         switchScreen('quiz-screen');
     }
 
     function renderQuestions() {
         const container = document.getElementById('questions-container');
-        container.innerHTML = currentQuestions.map((q, index) => `
-            <div class="question-box" id="qbox-${index}">
-                <div style="font-weight:bold; margin-bottom:10px;">Câu ${index + 1}: ${q.text}</div>
-                ${Object.keys(q.options).map(key => `
-                    <label style="display:block; margin-bottom:8px; cursor:pointer;">
-                        <input type="radio" name="q-${index}" value="${key}"> ${key}. ${q.options[key]}
-                    </label>
-                `).join('')}
-                <div class="answer-reveal" id="reveal-${index}">Đáp án đúng: ${q.correctText}</div>
-            </div>
-        `).join('');
-        document.getElementById('submit-controls').style.display = 'flex';
+        container.innerHTML = ''; 
+        
+        currentQuestions.forEach((q, index) => {
+            let html = `
+                <div class="question-box" id="qbox-${index}">
+                    <div class="question-title">Câu ${index + 1}: ${q.text}</div>
+                    ${Object.keys(q.options).map(key => `
+                        <label class="option">
+                            <input type="radio" name="q-${index}" value="${key}">
+                            ${key}. ${q.options[key]}
+                        </label>
+                    `).join('')}
+                    <div class="answer-reveal" id="reveal-${index}">
+                        Đáp án đúng: ${q.correctText}
+                    </div>
+                </div>
+            `;
+            container.innerHTML += html;
+        });
+        window.scrollTo(0, 0);
     }
 
     function submitQuiz() {
         let score = 0;
+        
         currentQuestions.forEach((q, index) => {
             let selected = document.querySelector(`input[name="q-${index}"]:checked`);
             let box = document.getElementById(`qbox-${index}`);
             let reveal = document.getElementById(`reveal-${index}`);
-            if (selected && selected.value === q.correct) {
-                score++; box.classList.add('correct-border');
+            
+            box.classList.remove('correct-border', 'wrong-border');
+
+            if (selected) {
+                if (selected.value === q.correct) {
+                    score++;
+                    box.classList.add('correct-border');
+                } else {
+                    box.classList.add('wrong-border');
+                    reveal.style.display = 'block';
+                }
             } else {
-                box.classList.add('wrong-border'); reveal.style.display = 'block';
+                box.classList.add('wrong-border');
+                reveal.style.display = 'block';
             }
-            document.querySelectorAll(`input[name="q-${index}"]`).forEach(i => i.disabled = true);
+            
+            let inputs = document.querySelectorAll(`input[name="q-${index}"]`);
+            inputs.forEach(input => input.disabled = true);
         });
-        document.getElementById('score-display').innerText = `Bạn đúng ${score} / ${currentQuestions.length} câu!`;
-        document.getElementById('submit-controls').style.display = 'none';
-        document.getElementById('result-screen').style.display = 'block';
+
+        document.getElementById('score-display').innerText = `Kết quả: Bạn làm đúng ${score} / ${currentQuestions.length} câu!`;
+        document.getElementById('submit-controls').style.display = 'none'; 
+        document.getElementById('result-screen').style.display = 'block'; 
     }
 
-    function startSingleQuiz(count) {
-        currentMode = 'single'; currentCount = count; currentSingleIndex = 0; singleScore = 0;
+    // --- CÁC HÀM CHO CHẾ ĐỘ LÀM TỪNG CÂU (QUIZ) ---
+    function startSingleQuiz(count, isRandom = true) {
+        currentMode = isRandom ? 'single-random' : 'single-fixed';
+        currentCount = count;
+        currentSingleIndex = 0;
+        
         let actualCount = Math.min(count, questionBank.length);
-        currentQuestions = shuffleArray(questionBank).slice(0, actualCount);
+        if (isRandom) {
+            let shuffled = shuffleArray(questionBank);
+            currentQuestions = shuffled.slice(0, actualCount);
+        } else {
+            currentQuestions = questionBank.slice(0, actualCount);
+        }
+        
+        userAnswers = new Array(actualCount).fill(null); // Khởi tạo mảng lưu đáp án trống
+        
         renderSingleQuestion();
         switchScreen('single-quiz-screen');
     }
 
     function renderSingleQuestion() {
         const container = document.getElementById('single-question-container');
-        document.getElementById('single-controls').style.display = 'none';
         let q = currentQuestions[currentSingleIndex];
-        container.innerHTML = `
+        
+        let html = `
             <div class="question-box" id="single-qbox">
-                <div style="font-weight:bold; margin-bottom:10px;">Câu ${currentSingleIndex + 1}/${currentQuestions.length}: ${q.text}</div>
+                <div class="question-title">Câu ${currentSingleIndex + 1} / ${currentQuestions.length}: ${q.text}</div>
                 ${Object.keys(q.options).map(key => `
-                    <label style="display:block; margin-bottom:8px; cursor:pointer;">
-                        <input type="radio" name="single-q" value="${key}" onchange="checkSingleAnswer()"> ${key}. ${q.options[key]}
+                    <label class="option">
+                        <input type="radio" name="single-q" value="${key}" onchange="checkSingleAnswer()">
+                        ${key}. ${q.options[key]}
                     </label>
                 `).join('')}
                 <div class="answer-reveal" id="single-reveal"></div>
             </div>
         `;
+        container.innerHTML = html;
+
+        // Xử lý hiển thị các nút điều hướng
+        const controls = document.getElementById('single-controls');
+        const prevBtn = document.getElementById('btn-prev-single');
+        const nextBtn = document.getElementById('btn-next-single');
+
+        prevBtn.style.display = currentSingleIndex > 0 ? 'inline-block' : 'none'; // Ẩn nút "Câu trước" ở câu đầu tiên
+
+        let previousAnswer = userAnswers[currentSingleIndex];
+        
+        // Nếu câu này đã được người dùng trả lời trước đó
+        if (previousAnswer) {
+            let radio = document.querySelector(`input[name="single-q"][value="${previousAnswer}"]`);
+            if(radio) radio.checked = true;
+
+            let box = document.getElementById('single-qbox');
+            let reveal = document.getElementById('single-reveal');
+            let inputs = document.querySelectorAll(`input[name="single-q"]`);
+            
+            inputs.forEach(input => input.disabled = true); // Khóa lại không cho chọn
+            
+            if (previousAnswer === q.correct) {
+                box.classList.add('correct-border');
+                reveal.innerHTML = "🎉 <b>Chính xác!</b> Đáp án: " + q.correctText;
+                reveal.style.color = "var(--correct-color)";
+            } else {
+                box.classList.add('wrong-border');
+                reveal.innerHTML = "❌ <b>Sai rồi!</b> Đáp án đúng: " + q.correctText;
+                reveal.style.color = "var(--wrong-color)";
+            }
+            reveal.style.display = 'block';
+
+            controls.style.display = 'flex';
+            nextBtn.style.display = 'inline-block';
+            nextBtn.innerText = (currentSingleIndex === currentQuestions.length - 1) ? "Xem kết quả" : "Đi tiếp";
+        } else {
+            // Nếu chưa trả lời
+            controls.style.display = currentSingleIndex > 0 ? 'flex' : 'none'; 
+            nextBtn.style.display = 'none'; // Ẩn nút đi tiếp, bắt buộc phải chọn đáp án mới cho qua
+        }
+
+        window.scrollTo(0, 0);
     }
 
     function checkSingleAnswer() {
@@ -283,31 +348,96 @@
         let selected = document.querySelector(`input[name="single-q"]:checked`);
         let box = document.getElementById('single-qbox');
         let reveal = document.getElementById('single-reveal');
-        document.querySelectorAll(`input[name="single-q"]`).forEach(i => i.disabled = true);
+        
+        if (!selected) return; 
+        
+        // Lưu lại đáp án vào mảng
+        userAnswers[currentSingleIndex] = selected.value;
+
+        // Khóa không cho chọn lại
+        let inputs = document.querySelectorAll(`input[name="single-q"]`);
+        inputs.forEach(input => input.disabled = true);
+        
+        // Chấm điểm và hiển thị giao diện ngay lập tức
         if (selected.value === q.correct) {
-            singleScore++; box.classList.add('correct-border');
-            reveal.innerHTML = "✅ Đúng! Đáp án: " + q.correctText;
+            box.classList.add('correct-border');
+            reveal.innerHTML = "🎉 <b>Chính xác!</b> Đáp án: " + q.correctText;
+            reveal.style.color = "var(--correct-color)";
         } else {
             box.classList.add('wrong-border');
-            reveal.innerHTML = "❌ Sai! Đáp án đúng: " + q.correctText;
+            reveal.innerHTML = "❌ <b>Sai rồi!</b> Đáp án đúng: " + q.correctText;
+            reveal.style.color = "var(--wrong-color)";
         }
         reveal.style.display = 'block';
+        
+        // Hiện nút Đi tiếp
         document.getElementById('single-controls').style.display = 'flex';
+        let nextBtn = document.getElementById('btn-next-single');
+        nextBtn.style.display = 'inline-block';
+
+        if (currentSingleIndex === currentQuestions.length - 1) {
+            nextBtn.innerText = "Xem kết quả";
+        } else {
+            nextBtn.innerText = "Đi tiếp";
+        }
+    }
+
+    function prevSingleQuestion() {
+        if (currentSingleIndex > 0) {
+            currentSingleIndex--;
+            renderSingleQuestion();
+        }
     }
 
     function nextSingleQuestion() {
         if (currentSingleIndex < currentQuestions.length - 1) {
-            currentSingleIndex++; renderSingleQuestion();
+            currentSingleIndex++;
+            renderSingleQuestion();
         } else {
-            document.getElementById('score-display').innerText = `Kết quả Quiz: ${singleScore} / ${currentQuestions.length}`;
+            // Tính tổng điểm dựa trên mảng đáp án đã lưu
+            let finalScore = 0;
+            userAnswers.forEach((ans, index) => {
+                if (ans === currentQuestions[index].correct) {
+                    finalScore++;
+                }
+            });
+
+            document.getElementById('score-display').innerText = `Kết quả: Bạn làm đúng ${finalScore} / ${currentQuestions.length} câu!`;
             switchScreen('result-screen');
         }
     }
 
-    function goHome() { switchScreen('home-screen'); }
-    function regenerateQuiz() { currentMode === 'single' ? startSingleQuiz(currentCount) : (currentMode === 'random' ? startRandomQuiz(currentCount) : startFixedQuiz()); }
-    function retryQuiz() { if(currentMode==='single'){currentSingleIndex=0; singleScore=0; renderSingleQuestion(); switchScreen('single-quiz-screen');} else {renderQuestions(); document.getElementById('result-screen').style.display='none';} }
+    // --- CÁC HÀM TIỆN ÍCH CHUNG ---
+    function regenerateQuiz() {
+        if (currentMode === 'random') {
+            startRandomQuiz(currentCount); 
+        } else if (currentMode === 'single-random') {
+            startSingleQuiz(currentCount, true); 
+        } else if (currentMode === 'single-fixed') {
+            startSingleQuiz(currentCount, false); 
+        } else {
+            startFixedQuiz(); 
+        }
+    }
+
+    function retryQuiz() {
+        if (currentMode.startsWith('single')) {
+            currentSingleIndex = 0;
+            userAnswers = new Array(currentQuestions.length).fill(null); // Xóa trắng đáp án cũ
+            renderSingleQuestion();
+            switchScreen('single-quiz-screen');
+        } else {
+            renderQuestions(); 
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('submit-controls').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+    }
+
+    function goHome() {
+        switchScreen('home-screen');
+    }
 </script>
+
 </body>
 </html>
-    
