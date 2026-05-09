@@ -1,1 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn Tập VSVTP - Doãn Nguyễn Gia Khang</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc; --container-bg: #ffffff; --text-main: #1e293b; --text-sub: #64748b;
+            --primary: #2563eb; --border: #e2e8f0; --card-bg: #ffffff; --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --correct-color: #16a34a; --wrong-color: #dc2626; --box-bg: #f1f5f9;
+        }
+        body.dark-theme {
+            --bg-color: #0f172a; --container-bg: #1e293b; --text-main: #f8fafc; --text-sub: #94a3b8;
+            --primary: #38bdf8; --border: #334155; --card-bg: #1e293b; --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+            --box-bg: #0f172a;
+        }
+        * { box-sizing: border-box; transition: all 0.3s; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; }
+        .container { width: 100%; max-width: 800px; background-color: var(--container-bg); padding: 40px; border-radius: 24px; box-shadow: var(--shadow); position: relative; margin-top: 20px;}
+        .theme-toggle { position: absolute; top: 25px; right: 25px; background: var(--border); border: none; padding: 10px 16px; border-radius: 50px; cursor: pointer; color: var(--text-main); font-weight: 600; display: flex; gap: 8px; }
+        
+        .btn-primary { background-color: var(--primary); color: white; border: none; padding: 15px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 12px;}
+        .btn-outline { background: none; border: 2px solid var(--primary); color: var(--primary); padding: 13px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 12px;}
+        .btn-back { background: none; border: 1px solid var(--border); color: var(--text-sub); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 30px;}
+        .btn-back:hover { color: var(--text-main); border-color: var(--text-main); }
+        
+        /* Menu Box Styles */
+        .menu-group { background: var(--box-bg); padding: 25px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; text-align: left;}
+        .menu-group h3 { margin-top: 0; margin-bottom: 20px; color: var(--primary); font-size: 20px;}
 
+        /* Quiz Styles */
+        .question-box { margin-bottom: 25px; padding: 25px; border: 2px solid var(--border); border-radius: 16px; background: var(--box-bg); }
+        .question-title { font-weight: 700; font-size: 18px; margin-bottom: 20px; line-height: 1.5; color: var(--text-main); }
+        .option { display: block; margin-bottom: 12px; cursor: pointer; padding: 10px; border-radius: 8px; transition: background 0.2s; }
+        .option:hover { background: var(--border); }
+        .correct-border { border-color: var(--correct-color) !important; background-color: rgba(22, 163, 74, 0.05) !important; }
+        .wrong-border { border-color: var(--wrong-color) !important; background-color: rgba(220, 38, 38, 0.05) !important; }
+        .answer-reveal { margin-top: 15px; padding: 15px; font-weight: bold; border-radius: 8px; display: none; }
+        .controls { display: flex; gap: 10px; margin-top: 30px; justify-content: center; flex-wrap: wrap;}
+        #score-display { text-align: center; font-size: 28px; font-weight: 700; color: var(--primary); margin-bottom: 20px;}
+        #batch-score-display { text-align: center; font-size: 28px; font-weight: 700; color: var(--primary); margin-bottom: 25px; padding: 20px; background: var(--box-bg); border-radius: 16px; border: 2px solid var(--primary); display: none; }
+    </style>
+</head>
+<body class="light-theme">
+
+<div class="container">
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span> <span id="theme-text">Chế độ tối</span>
+    </button>
+
+    <div id="subject-menu" style="text-align: center;">
+        <h1 style="color: var(--primary); margin-bottom: 5px;">Ôn Tập Vi Sinh Vật Thực Phẩm</h1>
+        <p style="color: var(--text-sub); margin-bottom: 30px;">Tài liệu nội bộ - Doãn Nguyễn Gia Khang</p>
+        
+        <div class="menu-group">
+            <h3>⚡ Chế độ Quiz (Làm từng câu)</h3>
+            <button class="btn-primary" onclick="startSingleQuiz(10, true)">📝 Quiz 10 câu (Ngẫu nhiên)</button>
+            <button class="btn-primary" onclick="startSingleQuiz(activeBank.length, true)">🔀 Quiz Toàn bộ (Ngẫu nhiên)</button>
+            <button class="btn-primary" onclick="startSingleQuiz(activeBank.length, false)">📚 Quiz Toàn bộ (Theo danh sách gốc)</button>
+        </div>
+
+        <div class="menu-group">
+            <h3>📄 Chế độ Danh sách (Hiển thị tất cả)</h3>
+            <button class="btn-outline" onclick="startRandomQuiz(10)">Làm 10 câu ngẫu nhiên</button>
+            <button class="btn-outline" onclick="startRandomQuiz(20)">Làm 20 câu ngẫu nhiên</button>
+            <button class="btn-outline" onclick="startFixedQuiz()">Làm toàn bộ (Theo danh sách gốc)</button>
+        </div>
+        
+        <button class="btn-back" onclick="window.location.href='index.html'">🔙 Quay lại trang chủ</button>
+    </div>
+
+    <div id="quiz-screen" style="display: none;">
+        <div id="batch-score-display"></div>
+        <div id="questions-container"></div>
+        <div class="controls">
+            <button class="btn-primary" style="width:auto;" id="btn-submit-batch" onclick="submitQuiz()">Nộp bài</button>
+            <button class="btn-outline" style="width:auto;" onclick="goMenu()">Trở về Menu</button>
+        </div>
+    </div>
+
+    <div id="single-quiz-screen" style="display: none;">
+        <div id="single-question-container"></div>
+        <div class="controls">
+            <button class="btn-outline" style="width:auto; display:none;" id="btn-prev" onclick="prevSingleQuestion()">⬅️ Câu trước</button>
+            <button class="btn-primary" style="width:auto; display:none;" id="btn-next" onclick="nextSingleQuestion()">Đi tiếp ➡️</button>
+        </div>
+        <div style="text-align:center; margin-top: 15px;">
+            <button class="btn-back" style="margin-top: 10px;" onclick="goMenu()">Trở về Menu</button>
+        </div>
+    </div>
+
+    <div id="result-screen" style="display: none; text-align: center;">
+        <div id="score-display"></div>
+        <div class="controls">
+            <button class="btn-primary" style="width:auto;" onclick="regenerateQuiz()">Làm bộ mới</button>
+            <button class="btn-outline" style="width:auto;" onclick="goMenu()">Trở về Menu</button>
+        </div>
+    </div>
+</div>
+
+<script src="vsvtp.js"></script>
+
+<script>
+    // Lấy dữ liệu từ file vsvtp.js
+    let activeBank = typeof vsvtpBank !== 'undefined' ? vsvtpBank : []; 
+    
+    let currentQuestions = [];
+    let userChoices = []; 
+    let currentSingleIndex = 0;
+    let currentMode = ''; 
+    let currentCount = 0;
+    let isRandomMode = false;
+
+    function toggleTheme() {
+        const body = document.body;
+        if (body.classList.contains('dark-theme')) {
+            body.classList.remove('dark-theme');
+            localStorage.setItem('theme', 'light');
+            document.getElementById('theme-icon').innerText = "🌙"; document.getElementById('theme-text').innerText = "Chế độ tối";
+        } else {
+            body.classList.add('dark-theme');
+            localStorage.setItem('theme', 'dark');
+            document.getElementById('theme-icon').innerText = "☀️"; document.getElementById('theme-text').innerText = "Chế độ sáng";
+        }
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-theme');
+        document.getElementById('theme-icon').innerText = "☀️"; document.getElementById('theme-text').innerText = "Chế độ sáng";
+    }
+
+    function switchScreen(screenId) {
+        ['subject-menu', 'quiz-screen', 'single-quiz-screen', 'result-screen'].forEach(id => {
+            let el = document.getElementById(id);
+            if(el) el.style.display = 'none';
+        });
+        let target = document.getElementById(screenId);
+        if(target) target.style.display = 'block';
+    }
+
+    function goMenu() { switchScreen('subject-menu'); window.scrollTo(0, 0); }
+
+    function shuffleArray(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function startRandomQuiz(count) {
+        if(activeBank.length === 0) { alert("Chưa có ngân hàng câu hỏi VSVTP!"); return; }
+        currentMode = 'batch'; isRandomMode = true; currentCount = count;
+        let actualCount = Math.min(count, activeBank.length); 
+        currentQuestions = shuffleArray(activeBank).slice(0, actualCount);
+        renderBatchQuestions(); switchScreen('quiz-screen');
+    }
+
+    function startFixedQuiz() {
+        if(activeBank.length === 0) { alert("Chưa có ngân hàng câu hỏi VSVTP!"); return; }
+        currentMode = 'batch'; isRandomMode = false;
+        currentQuestions = [...activeBank];
+        renderBatchQuestions(); switchScreen('quiz-screen');
+    }
+
+    function renderBatchQuestions() {
+        document.getElementById('batch-score-display').style.display = 'none';
+        document.getElementById('btn-submit-batch').style.display = 'inline-block';
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+        currentQuestions.forEach((q, i) => {
+            container.innerHTML += `
+                <div class="question-box" id="batch-box-${i}">
+                    <div class="question-title">Câu ${i + 1}: ${q.text}</div>
+                    ${Object.keys(q.options).map(k => `<label class="option"><input type="radio" name="batch-q-${i}" value="${k}"> ${k}. ${q.options[k]}</label>`).join('')}
+                    <div class="answer-reveal" id="batch-reveal-${i}"></div>
+                </div>`;
+        });
+        window.scrollTo(0, 0);
+    }
+
+    function submitQuiz() {
+        let score = 0;
+        currentQuestions.forEach((q, i) => {
+            let selected = document.querySelector(`input[name="batch-q-${i}"]:checked`);
+            let box = document.getElementById(`batch-box-${i}`);
+            let reveal = document.getElementById(`batch-reveal-${i}`);
+            box.classList.remove('correct-border', 'wrong-border');
+            if (selected) {
+                if (selected.value === q.correct) { 
+                    score++; box.classList.add('correct-border'); 
+                    reveal.innerHTML = `🎉 Chính xác! Đáp án đúng: ${q.correctText}`;
+                    reveal.style.color = "var(--correct-color)"; reveal.style.backgroundColor = "rgba(22, 163, 74, 0.1)";
+                } else { 
+                    box.classList.add('wrong-border'); 
+                    reveal.innerHTML = `❌ Sai rồi! Đáp án đúng: ${q.correctText}`;
+                    reveal.style.color = "var(--wrong-color)"; reveal.style.backgroundColor = "rgba(220, 38, 38, 0.1)";
+                }
+            } else {
+                box.classList.add('wrong-border'); 
+                reveal.innerHTML = `⚠️ Bạn chưa chọn! Đáp án đúng: ${q.correctText}`;
+                reveal.style.color = "var(--wrong-color)"; reveal.style.backgroundColor = "rgba(220, 38, 38, 0.1)";
+            }
+            reveal.style.display = 'block';
+            document.querySelectorAll(`input[name="batch-q-${i}"]`).forEach(inp => inp.disabled = true);
+        });
+        const scoreDiv = document.getElementById('batch-score-display');
+        scoreDiv.innerText = `Điểm của bạn: ${score} / ${currentQuestions.length}`;
+        scoreDiv.style.display = 'block';
+        document.getElementById('btn-submit-batch').style.display = 'none';
+        window.scrollTo(0, 0);
+    }
+
+    function startSingleQuiz(count, random) {
+        if(activeBank.length === 0) { alert("Chưa có ngân hàng câu hỏi VSVTP!"); return; }
+        currentMode = 'single'; isRandomMode = random; currentCount = count; currentSingleIndex = 0;
+        let actualCount = Math.min(count, activeBank.length);
+        currentQuestions = random ? shuffleArray(activeBank).slice(0, actualCount) : activeBank.slice(0, actualCount);
+        userChoices = new Array(currentQuestions.length).fill(null);
+        renderSingleQuestion(); switchScreen('single-quiz-screen');
+    }
+
+    function renderSingleQuestion() {
+        const container = document.getElementById('single-question-container');
+        const q = currentQuestions[currentSingleIndex];
+        const savedChoice = userChoices[currentSingleIndex];
+        container.innerHTML = `
+            <div class="question-box" id="single-box">
+                <div class="question-title">Câu ${currentSingleIndex + 1} / ${currentQuestions.length}: ${q.text}</div>
+                ${Object.keys(q.options).map(k => `<label class="option"><input type="radio" name="sq" value="${k}" ${savedChoice === k ? 'checked' : ''} ${savedChoice !== null ? 'disabled' : ''} onchange="handleSingleChoice(this)"> ${k}. ${q.options[k]}</label>`).join('')}
+                <div class="answer-reveal" id="single-reveal" style="${savedChoice !== null ? 'display:block' : ''}">${savedChoice !== null ? (savedChoice === q.correct ? '🎉 Chính xác!' : '❌ Sai rồi! Đáp án đúng: ' + q.correctText) : ''}</div>
+            </div>`;
+        if (savedChoice !== null) document.getElementById('single-box').classList.add(savedChoice === q.correct ? 'correct-border' : 'wrong-border');
+        updateNavigationButtons();
+    }
+
+    function handleSingleChoice(input) {
+        userChoices[currentSingleIndex] = input.value;
+        document.querySelectorAll('input[name="sq"]').forEach(i => i.disabled = true);
+        renderSingleQuestion();
+    }
+
+    function updateNavigationButtons() {
+        document.getElementById('btn-prev').style.display = currentSingleIndex > 0 ? 'inline-block' : 'none';
+        const btnNext = document.getElementById('btn-next');
+        if (userChoices[currentSingleIndex] !== null) {
+            btnNext.style.display = 'inline-block'; 
+            btnNext.innerText = currentSingleIndex === currentQuestions.length - 1 ? "Xem kết quả" : "Đi tiếp ➡️";
+        } else { btnNext.style.display = 'none'; }
+    }
+
+    function nextSingleQuestion() {
+        if (currentSingleIndex < currentQuestions.length - 1) { currentSingleIndex++; renderSingleQuestion(); } 
+        else {
+            let score = 0; userChoices.forEach((c, i) => { if (c === currentQuestions[i].correct) score++; });
+            document.getElementById('score-display').innerText = `Kết quả: ${score} / ${currentQuestions.length}`;
+            switchScreen('result-screen');
+        }
+    }
+    function prevSingleQuestion() { if (currentSingleIndex > 0) { currentSingleIndex--; renderSingleQuestion(); } }
+    function regenerateQuiz() { currentMode === 'batch' ? (isRandomMode ? startRandomQuiz(currentCount) : startFixedQuiz()) : startSingleQuiz(currentCount, isRandomMode); }
+</script>
+</body>
+</html>
