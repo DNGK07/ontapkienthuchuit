@@ -1,4 +1,4 @@
-// File: questions.js
+// File: ktct.js
 const questionBank = [
     {
         id: 1,
