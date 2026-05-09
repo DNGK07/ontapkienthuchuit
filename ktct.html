@@ -20,11 +20,15 @@
         .container { width: 100%; max-width: 800px; background-color: var(--container-bg); padding: 40px; border-radius: 24px; box-shadow: var(--shadow); position: relative; margin-top: 20px;}
         .theme-toggle { position: absolute; top: 25px; right: 25px; background: var(--border); border: none; padding: 10px 16px; border-radius: 50px; cursor: pointer; color: var(--text-main); font-weight: 600; display: flex; gap: 8px; }
         
-        .btn-primary { background-color: var(--primary); color: white; border: none; padding: 15px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 15px;}
-        .btn-outline { background: none; border: 2px solid var(--primary); color: var(--primary); padding: 13px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 15px;}
+        .btn-primary { background-color: var(--primary); color: white; border: none; padding: 15px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 12px;}
+        .btn-outline { background: none; border: 2px solid var(--primary); color: var(--primary); padding: 13px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 12px;}
         .btn-back { background: none; border: 1px solid var(--border); color: var(--text-sub); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 30px;}
         .btn-back:hover { color: var(--text-main); border-color: var(--text-main); }
         
+        /* Menu Box Styles */
+        .menu-group { background: var(--box-bg); padding: 25px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; text-align: left;}
+        .menu-group h3 { margin-top: 0; margin-bottom: 20px; color: var(--primary); font-size: 20px;}
+
         /* Quiz Styles */
         .question-box { margin-bottom: 25px; padding: 25px; border: 2px solid var(--border); border-radius: 16px; background: var(--box-bg); }
         .question-title { font-weight: 700; font-size: 18px; margin-bottom: 20px; line-height: 1.5; color: var(--text-main); }
@@ -46,12 +50,20 @@
 
     <div id="subject-menu" style="text-align: center;">
         <h1 style="color: var(--primary); margin-bottom: 5px;">Ôn Tập Kinh Tế Chính Trị</h1>
-        <p style="color: var(--text-sub); margin-bottom: 40px;">Tài liệu nội bộ - Doãn Nguyễn Gia Khang</p>
+        <p style="color: var(--text-sub); margin-bottom: 30px;">Tài liệu nội bộ - Doãn Nguyễn Gia Khang</p>
         
-        <button class="btn-outline" onclick="startRandomQuiz(10)">Làm 10 câu ngẫu nhiên</button>
-        <button class="btn-outline" onclick="startRandomQuiz(20)">Làm 20 câu ngẫu nhiên</button>
-        <button class="btn-outline" onclick="startSingleQuiz(40, true)">Luyện thi từng câu (40 câu)</button>
-        <button class="btn-primary" onclick="startFixedQuiz()">Làm toàn bộ (Thứ tự gốc)</button>
+        <div class="menu-group">
+            <h3>⚡ Chế độ Quiz (Làm từng câu)</h3>
+            <button class="btn-primary" onclick="startSingleQuiz(10, true)">📝 Quiz 10 câu (Ngẫu nhiên)</button>
+            <button class="btn-primary" onclick="startSingleQuiz(activeBank.length, true)">🔀 Quiz Toàn bộ (Ngẫu nhiên)</button>
+            <button class="btn-primary" onclick="startSingleQuiz(activeBank.length, false)">📚 Quiz Toàn bộ (Theo danh sách gốc)</button>
+        </div>
+
+        <div class="menu-group">
+            <h3>📄 Chế độ Danh sách (Hiển thị tất cả)</h3>
+            <button class="btn-outline" onclick="startRandomQuiz(10)">Làm 10 câu ngẫu nhiên</button>
+            <button class="btn-outline" onclick="startFixedQuiz()">Làm toàn bộ (Theo danh sách gốc)</button>
+        </div>
         
         <button class="btn-back" onclick="window.location.href='index.html'">🔙 Quay lại trang chủ</button>
     </div>
@@ -67,10 +79,12 @@
     <div id="single-quiz-screen" style="display: none;">
         <div id="single-question-container"></div>
         <div class="controls">
-            <button class="btn-outline" style="width:auto; display:none;" id="btn-prev" onclick="prevSingleQuestion()">Câu trước</button>
-            <button class="btn-primary" style="width:auto; display:none;" id="btn-next" onclick="nextSingleQuestion()">Đi tiếp</button>
+            <button class="btn-outline" style="width:auto; display:none;" id="btn-prev" onclick="prevSingleQuestion()">⬅️ Câu trước</button>
+            <button class="btn-primary" style="width:auto; display:none;" id="btn-next" onclick="nextSingleQuestion()">Đi tiếp ➡️</button>
         </div>
-        <div style="text-align:center;"><button class="btn-back" onclick="goMenu()">Trở về Menu</button></div>
+        <div style="text-align:center; margin-top: 15px;">
+            <button class="btn-back" style="margin-top: 10px;" onclick="goMenu()">Trở về Menu</button>
+        </div>
     </div>
 
     <div id="result-screen" style="display: none; text-align: center;">
@@ -86,7 +100,6 @@
 
 <script>
     // 1. LẤY DỮ LIỆU TỪ FILE JS
-    // Khúc này cực kì quan trọng: Nếu có ktctBank thì lấy, không có thì mảng rỗng
     let activeBank = typeof ktctBank !== 'undefined' ? ktctBank : []; 
     
     let currentQuestions = [];
@@ -142,11 +155,8 @@
     function startRandomQuiz(count) {
         if(activeBank.length === 0) { alert("Lỗi: Không tìm thấy ngân hàng câu hỏi. Hãy kiểm tra file ktct.js"); return; }
         currentMode = 'batch'; isRandomMode = true; currentCount = count;
-        
-        // Đã sửa questionBank thành activeBank
         let actualCount = Math.min(count, activeBank.length); 
         currentQuestions = shuffleArray(activeBank).slice(0, actualCount);
-        
         renderBatchQuestions(); 
         switchScreen('quiz-screen');
     }
@@ -154,10 +164,7 @@
     function startFixedQuiz() {
         if(activeBank.length === 0) { alert("Lỗi: Không tìm thấy ngân hàng câu hỏi."); return; }
         currentMode = 'batch'; isRandomMode = false;
-        
-        // Đã sửa questionBank thành activeBank
         currentQuestions = [...activeBank];
-        
         renderBatchQuestions(); 
         switchScreen('quiz-screen');
     }
@@ -191,12 +198,11 @@
         switchScreen('result-screen'); window.scrollTo(0, 0);
     }
 
-    // LÀM BÀI TỪNG CÂU
+    // LÀM BÀI TỪNG CÂU (CHẾ ĐỘ QUIZ)
     function startSingleQuiz(count, random) {
         if(activeBank.length === 0) { alert("Lỗi: Không tìm thấy ngân hàng câu hỏi."); return; }
         currentMode = 'single'; isRandomMode = random; currentCount = count; currentSingleIndex = 0;
         
-        // Đã sửa questionBank thành activeBank
         let actualCount = Math.min(count, activeBank.length);
         currentQuestions = random ? shuffleArray(activeBank).slice(0, actualCount) : activeBank.slice(0, actualCount);
         
@@ -228,22 +234,38 @@
     }
 
     function updateNavigationButtons() {
+        // Nút Câu trước sẽ luôn hiện nếu bạn không ở câu hỏi số 1 (index > 0)
         document.getElementById('btn-prev').style.display = currentSingleIndex > 0 ? 'inline-block' : 'none';
+        
         const btnNext = document.getElementById('btn-next');
         if (userChoices[currentSingleIndex] !== null) {
-            btnNext.style.display = 'inline-block'; btnNext.innerText = currentSingleIndex === currentQuestions.length - 1 ? "Xem kết quả" : "Đi tiếp";
-        } else { btnNext.style.display = 'none'; }
+            btnNext.style.display = 'inline-block'; 
+            btnNext.innerText = currentSingleIndex === currentQuestions.length - 1 ? "Xem kết quả" : "Đi tiếp ➡️";
+        } else { 
+            btnNext.style.display = 'none'; 
+        }
     }
 
     function nextSingleQuestion() {
-        if (currentSingleIndex < currentQuestions.length - 1) { currentSingleIndex++; renderSingleQuestion(); } 
-        else {
-            let score = 0; userChoices.forEach((c, i) => { if (c === currentQuestions[i].correct) score++; });
+        if (currentSingleIndex < currentQuestions.length - 1) { 
+            currentSingleIndex++; 
+            renderSingleQuestion(); 
+        } else {
+            let score = 0; 
+            userChoices.forEach((c, i) => { if (c === currentQuestions[i].correct) score++; });
             document.getElementById('score-display').innerText = `Kết quả: ${score} / ${currentQuestions.length}`;
             switchScreen('result-screen');
         }
     }
-    function prevSingleQuestion() { if (currentSingleIndex > 0) { currentSingleIndex--; renderSingleQuestion(); } }
+    
+    // NÚT CÂU TRƯỚC (Quay lại xem lựa chọn và đáp án)
+    function prevSingleQuestion() { 
+        if (currentSingleIndex > 0) { 
+            currentSingleIndex--; 
+            renderSingleQuestion(); 
+        } 
+    }
+    
     function regenerateQuiz() { currentMode === 'batch' ? (isRandomMode ? startRandomQuiz(currentCount) : startFixedQuiz()) : startSingleQuiz(currentCount, isRandomMode); }
 </script>
 </body>
