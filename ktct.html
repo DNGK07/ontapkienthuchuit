@@ -85,8 +85,10 @@
 <script src="ktct.js"></script>
 
 <script>
-    // Dữ liệu lấy từ file ktct.js
+    // 1. LẤY DỮ LIỆU TỪ FILE JS
+    // Khúc này cực kì quan trọng: Nếu có ktctBank thì lấy, không có thì mảng rỗng
     let activeBank = typeof ktctBank !== 'undefined' ? ktctBank : []; 
+    
     let currentQuestions = [];
     let userChoices = []; 
     let currentSingleIndex = 0;
@@ -100,21 +102,29 @@
         if (body.classList.contains('dark-theme')) {
             body.classList.remove('dark-theme');
             localStorage.setItem('theme', 'light');
-            document.getElementById('theme-icon').innerText = "🌙"; document.getElementById('theme-text').innerText = "Chế độ tối";
+            document.getElementById('theme-icon').innerText = "🌙"; 
+            document.getElementById('theme-text').innerText = "Chế độ tối";
         } else {
             body.classList.add('dark-theme');
             localStorage.setItem('theme', 'dark');
-            document.getElementById('theme-icon').innerText = "☀️"; document.getElementById('theme-text').innerText = "Chế độ sáng";
+            document.getElementById('theme-icon').innerText = "☀️"; 
+            document.getElementById('theme-text').innerText = "Chế độ sáng";
         }
     }
+    
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-theme');
-        document.getElementById('theme-icon').innerText = "☀️"; document.getElementById('theme-text').innerText = "Chế độ sáng";
+        document.getElementById('theme-icon').innerText = "☀️"; 
+        document.getElementById('theme-text').innerText = "Chế độ sáng";
     }
 
     function switchScreen(screenId) {
-        ['subject-menu', 'quiz-screen', 'single-quiz-screen', 'result-screen'].forEach(id => document.getElementById(id).style.display = 'none');
-        document.getElementById(screenId).style.display = 'block';
+        ['subject-menu', 'quiz-screen', 'single-quiz-screen', 'result-screen'].forEach(id => {
+            let el = document.getElementById(id);
+            if(el) el.style.display = 'none';
+        });
+        let target = document.getElementById(screenId);
+        if(target) target.style.display = 'block';
     }
 
     function goMenu() { switchScreen('subject-menu'); window.scrollTo(0, 0); }
@@ -128,18 +138,28 @@
         return arr;
     }
 
-    // LOGIC LÀM BÀI TƯƠNG TỰ BẢN CŨ
+    // LÀM BÀI HÀNG LOẠT
     function startRandomQuiz(count) {
+        if(activeBank.length === 0) { alert("Lỗi: Không tìm thấy ngân hàng câu hỏi. Hãy kiểm tra file ktct.js"); return; }
         currentMode = 'batch'; isRandomMode = true; currentCount = count;
-        let actualCount = Math.min(count, activeBank.length);
+        
+        // Đã sửa questionBank thành activeBank
+        let actualCount = Math.min(count, activeBank.length); 
         currentQuestions = shuffleArray(activeBank).slice(0, actualCount);
-        renderBatchQuestions(); switchScreen('quiz-screen');
+        
+        renderBatchQuestions(); 
+        switchScreen('quiz-screen');
     }
 
     function startFixedQuiz() {
+        if(activeBank.length === 0) { alert("Lỗi: Không tìm thấy ngân hàng câu hỏi."); return; }
         currentMode = 'batch'; isRandomMode = false;
+        
+        // Đã sửa questionBank thành activeBank
         currentQuestions = [...activeBank];
-        renderBatchQuestions(); switchScreen('quiz-screen');
+        
+        renderBatchQuestions(); 
+        switchScreen('quiz-screen');
     }
 
     function renderBatchQuestions() {
@@ -171,12 +191,18 @@
         switchScreen('result-screen'); window.scrollTo(0, 0);
     }
 
+    // LÀM BÀI TỪNG CÂU
     function startSingleQuiz(count, random) {
+        if(activeBank.length === 0) { alert("Lỗi: Không tìm thấy ngân hàng câu hỏi."); return; }
         currentMode = 'single'; isRandomMode = random; currentCount = count; currentSingleIndex = 0;
+        
+        // Đã sửa questionBank thành activeBank
         let actualCount = Math.min(count, activeBank.length);
         currentQuestions = random ? shuffleArray(activeBank).slice(0, actualCount) : activeBank.slice(0, actualCount);
+        
         userChoices = new Array(currentQuestions.length).fill(null);
-        renderSingleQuestion(); switchScreen('single-quiz-screen');
+        renderSingleQuestion(); 
+        switchScreen('single-quiz-screen');
     }
 
     function renderSingleQuestion() {
