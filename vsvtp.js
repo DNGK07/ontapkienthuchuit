@@ -5,7 +5,7 @@ const vsvtpBank = [
   {id:4, text:"Màng nhân và nhân tế bào", options:{"A": "Chỉ gặp ở các tế bào tiền nhân", "B": "Chỉ gặp ở các tế bào nhân chuẩn", "C": "Gặp ở cả tế bào tiền nhân lẫn tế bào nhân chuẩn", "D": "Chỉ gặp ở vi khuẩn"}, correct:"B", correctText:"Chỉ gặp ở các tế bào nhân chuẩn"},
   {id:5, text:"Vi khuẩn có kích thước nhỏ bé ở cấp độ:", options:{"A": "mm", "B": "Β. μm", "C": "nm", "D": "Å"}, correct:"B", correctText:"Β. μm"},
   {id:6, text:"Dạng vi sinh vật nào sau đây thuộc loại nhân sơ?", options:{"A": "Nguyên sinh động vật", "B": "Nấm", "C": "Tảo", "D": "Vi khuẩn"}, correct:"D", correctText:"Vi khuẩn"},
-  {id:7, text:"Vĩ sinh vật nào tạo kháng sinh penicillin?", options:{"A": "E. coli", "B": "Bacillus", "C": "Clostridium I", "D": "Penicillium"}, correct:"D", correctText:"Penicillium"},
+  {id:7, text:"Vi sinh vật nào tạo kháng sinh penicillin?", options:{"A": "E. coli", "B": "Bacillus", "C": "Clostridium I", "D": "Penicillium"}, correct:"D", correctText:"Penicillium"},
   {id:8, text:"Trực khuẩn thuộc nhóm vi khuẩn nào sau đây?", options:{"A": "Gram âm, có bào tử", "B": "Hình que, có hoặc không bào tử", "C": "Không có vách tế bào", "D": "Chỉ sống trong điều kiện kỵ khí"}, correct:"B", correctText:"Hình que, có hoặc không bào tử"},
   {id:9, text:"Vi khuẩn Mycoplasma khác với đa số vi khuẩn khác ở điểm nào?", options:{"A": "Có nhân thật", "B": "Không có DNA", "C": "Không có vách tế bào", "D": "Không thể sinh sản"}, correct:"C", correctText:"Không có vách tế bào"},
   {id:10, text:"Nhóm vi khuẩn nào có thể sinh sống ở môi trường cực đoan như suối nước nóng, hồ acid?", options:{"A": "Eubacteria", "B": "Cyanobacteria", "C": "Vi khuẩn cổ (Archaea)", "D": "Clostridium"}, correct:"C", correctText:"Archaea"},
